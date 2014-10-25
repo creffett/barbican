@@ -4,7 +4,7 @@
 ##
 
 from yapsy.PluginManager import PluginManager
-from ConfigParser import ConfigParser
+from ConfigParser import ConfigParser, NoOptionError
 from argparse import ArgumentParser
 from threading import Thread
 from plugins.plugin_classes import MonitoringPlugin, FirewallPlugin
@@ -43,10 +43,10 @@ def initializeBarbican(config_path):
         plugin_info.plugin_object.set_config_file(config_path)
 
     print "Activating firewall"
-    firewall_plugin = config.get("firewall_plugin")
-    if firewall_plugin is not None:
+    try:
+        firewall_plugin = config.get("barbican_client", "firewall_plugin")
         plugin_manager.activatePluginByName(firewall_plugin)
-    else:
+    except NoOptionError:
         plugin_manager.activatePluginByName("iptables plugin")
 
     return
