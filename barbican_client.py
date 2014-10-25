@@ -27,15 +27,20 @@ def initializeBarbican(config_path):
     print "Activating plugins"
     for plugin_info in plugin_manager.getAllPlugins():
         plugin_manager.activatePluginByName(plugin_info.name)
+
+    for plugin_info in plugin_manager.getAllPlugins():
+        plugin_info.plugin_object.set_hostname(config.get("barbican_client", "hostname"))
+        plugin_info.plugin_object.set_config_file(config_path)
     return
 
 
 def runBarbican():
     threads = []
-    for pluginInfo in plugin_manager.getAllPlugins():
-        threads.append(Thread(target=pluginInfo.plugin_object.run))
+    for plugin_info in plugin_manager.getAllPlugins():
+        threads.append(Thread(target=plugin_info.plugin_object.run))
 
     for t in threads:
+        t.daemon = True  # Supposedly lets me Ctrl-C with threads running
         t.start()
 
     for t in threads:

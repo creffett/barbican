@@ -4,33 +4,35 @@
 
 from yapsy.IPlugin import IPlugin
 import time
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
-
-
-class LogChangeHandler(FileSystemEventHandler):
-    def on_modified(self, event):
-        print "Got it!", event
-
+import re
+import os
 
 class ApachePlugin(IPlugin):
+    hostname = "default"
+    module_name = "apache"
+    def handle(self, line):
+        
+        try:
+            print re.findall(self.log_regex, line.strip()).groups()
+        except:
+            print line.strip()
+            return
 
     def run(self):
         print "Activated apache"
-        event_handler = LogChangeHandler()
-        observer = Observer()
-        observer.schedule(event_handler, path='/var/log/apache2/', recursive=False)
-        observer.start()
+        f = open('/var/log/apache2/access_log', 'r')
+        while True:  # Continuously watch for changes
+            line = ''
+            while len(line) == 0 or line[-1] != '\n':  # Read in new lines
+                tail = f.readline()
+                if tail == '':
+                    time.sleep(0.1)
+                    continue
+                line += tail
+            self.handle(line)
 
-        try:
-            while True:
-                time.sleep(1)
-        except KeyboardInterrupt:
-            observer.stop()
-        observer.join()
+    def set_hostname(self, hostname):
+        self.hostname = hostname
 
-    def print_name(self):
-        print "This is the Apache log monitor plugin"
-
-    def generate_json(self):
-        return
+    def set_config_file(self, config_file):
+        self.config_file = config_file

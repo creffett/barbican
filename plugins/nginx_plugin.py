@@ -4,34 +4,30 @@
 
 from yapsy.IPlugin import IPlugin
 import time
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
+import re
+import os
 
-
-class LogChangeHandler(FileSystemEventHandler):
-    def on_modified(self, event):
-        print "Got it!", event
-
-
-class ApachePlugin(IPlugin):
+class NginxPlugin(IPlugin):
+    hostname = "default"
+    module_name = "nginx"
+    def handle(self, line):
+        print line.strip()
 
     def run(self):
         print "Activated nginx"
+        f = open('/var/log/nginx/access_log', 'r')
+        while True:  # Continuously watch for changes
+            line = ''
+            while len(line) == 0 or line[-1] != '\n':  # Read in new lines
+                tail = f.readline()
+                if tail == '':
+                    time.sleep(0.1)
+                    continue
+                line += tail
+            self.handle(line)
 
-        event_handler = LogChangeHandler()
-        observer = Observer()
-        observer.schedule(event_handler, path='/tmp/test/', recursive=False)
-        observer.start()
+    def set_hostname(self, hostname):
+        self.hostname = hostname
 
-        try:
-            while True:
-                time.sleep(1)
-        except KeyboardInterrupt:
-            observer.stop()
-        observer.join()
-
-    def print_name(self):
-        print "This is the Apache log monitor plugin"
-
-    def generate_json(self):
-        return
+    def set_config_file(self, config_file):
+        self.config_file = config_file
