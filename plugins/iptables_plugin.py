@@ -2,14 +2,14 @@
 # Example barbican plugin
 ##
 
-from yapsy.IPlugin import IPlugin
+from plugins import plugin_classes
 import SocketServer
 import json
 import iptc
 import threading
 
 
-class IptablesPlugin(IPlugin):
+class IptablesPlugin(plugin_classes.FirewallPlugin):
     hostname = "default"
     module_name = "iptables"
 

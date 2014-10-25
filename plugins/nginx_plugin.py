@@ -2,14 +2,13 @@
 # Example barbican plugin
 ##
 
-from yapsy.IPlugin import IPlugin
+from plugins import plugin_classes
 import time
-import re
-import os
 
-class NginxPlugin(IPlugin):
-    hostname = "default"
+
+class NginxPlugin(plugin_classes.MonitoringPlugin):
     module_name = "nginx"
+
     def handle(self, line):
         print line.strip()
 
@@ -25,9 +24,3 @@ class NginxPlugin(IPlugin):
                     continue
                 line += tail
             self.handle(line)
-
-    def set_hostname(self, hostname):
-        self.hostname = hostname
-
-    def set_config_file(self, config_file):
-        self.config_file = config_file

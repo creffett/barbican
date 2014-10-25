@@ -3,6 +3,6 @@ Name = iptables plugin
 Module = iptables_plugin
    
 [Documentation]
-Description = iptables plugin
+Description = iptables firewall plugin
 Author = Chris Reffett
 Version = 1.0

@@ -2,19 +2,12 @@
 # Example barbican plugin
 ##
 
-from yapsy.IPlugin import IPlugin
+from plugins import plugin_classes
 
 
-class ExamplePlugin(IPlugin):
-    hostname = "default"
+class ExamplePlugin(plugin_classes.MonitoringPlugin):
     module_name = "example"
 
     def run(self):
         print "Activated example plugin"
         return
-
-    def set_hostname(self, hostname):
-        self.hostname = hostname
-
-    def set_config_file(self, config_file):
-        self.config_file = config_file

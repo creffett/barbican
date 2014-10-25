@@ -7,6 +7,7 @@ from yapsy.PluginManager import PluginManager
 from ConfigParser import ConfigParser
 from argparse import ArgumentParser
 from threading import Thread
+from plugins.plugin_classes import MonitoringPlugin, FirewallPlugin
 import logging
 import os
 
@@ -22,15 +23,32 @@ def initializeBarbican(config_path):
                                                        "plugin_dir"))
     plugin_manager.setPluginInfoExtension("barbican-plugin")
     plugin_manager.setPluginPlaces([plugin_path])
+    # Set up categories
+    plugin_manager.setCategoriesFilter({
+        "Monitoring": MonitoringPlugin,
+        "Firewall": FirewallPlugin
+        })
+ 
     plugin_manager.collectPlugins()
 
-    print "Activating plugins"
     for plugin_info in plugin_manager.getAllPlugins():
+        print plugin_info, plugin_info.name
+
+    print "Activating monitoring plugins"
+    for plugin_info in plugin_manager.getPluginsOfCategory("Monitoring"):
         plugin_manager.activatePluginByName(plugin_info.name)
 
-    for plugin_info in plugin_manager.getAllPlugins():
+    for plugin_info in plugin_manager.getPluginsOfCategory("Monitoring"):
         plugin_info.plugin_object.set_hostname(config.get("barbican_client", "hostname"))
         plugin_info.plugin_object.set_config_file(config_path)
+
+    print "Activating firewall"
+    firewall_plugin = config.get("firewall_plugin")
+    if firewall_plugin is not None:
+        plugin_manager.activatePluginByName(firewall_plugin)
+    else:
+        plugin_manager.activatePluginByName("iptables plugin")
+
     return
 
 
@@ -48,7 +66,7 @@ def runBarbican():
 
 
 def main():
-    logging.basicConfig()
+    logging.basicConfig(level=logging.DEBUG)
 
     parser = ArgumentParser(description="Activate barbican")
     parser.add_argument("--config", dest="config_path",
