@@ -1,0 +1,8 @@
+[Core]
+Name = Example Plugin
+Module = example_plugin
+   
+[Documentation]
+Description = Example Plugin
+Author = Chris Reffett
+Version = 1.0

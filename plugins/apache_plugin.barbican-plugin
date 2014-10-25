@@ -1,0 +1,8 @@
+[Core]
+Name = Apache Plugin
+Module = apache_plugin
+   
+[Documentation]
+Description = Apache log plugin
+Author = Chris Reffett
+Version = 1.0
