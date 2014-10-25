@@ -1,8 +1,8 @@
 [Core]
-Name = Apache Plugin
+Name = Nginx Plugin
 Module = nginx_plugin
    
 [Documentation]
-Description = Apache log plugin
+Description = Nginx log plugin
 Author = Chris Reffett
 Version = 1.0
