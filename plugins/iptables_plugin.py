@@ -21,10 +21,8 @@ class IptablesPlugin(plugin_classes.FirewallPlugin):
             for rule in chain.rules:
                 port_matches = False
                 for match in rule.matches:
-                    print match.name, match.dport
                     if match.name == "tcp" and match.dport == port:
                         port_matches = True
-                print rule.src, host, port_matches
                 if rule.src == "%s/255.255.255.255" % host and port_matches:
                     print "deleted ", rule
                     chain.delete_rule(rule)
@@ -36,7 +34,6 @@ class IptablesPlugin(plugin_classes.FirewallPlugin):
                 
                 chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), "INPUT")
                 action_message = json.loads(self.request.recv(1024).strip())
-                print action_message["module"]
                 host = action_message["data"]["host"]
                 port = action_message["data"]["port"]
                 time = action_message["data"]["time"]
@@ -48,7 +45,6 @@ class IptablesPlugin(plugin_classes.FirewallPlugin):
                 match = rule.create_match("tcp")
                 match.dport = port
                 rule.create_target("DROP")
-                print rule, match, match.dport
                 chain.insert_rule(rule)
                 if (time == 0):
                     return
