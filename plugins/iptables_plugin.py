@@ -31,10 +31,12 @@ class IptablesPlugin(plugin_classes.FirewallPlugin):
 
         def handle(self):
             try:
-                
                 chain = iptc.Chain(iptc.Table(iptc.Table.FILTER), "INPUT")
                 action_message = json.loads(self.request.recv(1024).strip())
-                host = action_message["data"]["host"]
+		if socket.gethostbyname(action_message["data"]["host"]) == action_message["data"]["host"]:
+			host = action_message["data"]["host"]
+		else:
+			host = socket.gethostbyname(action_message["data"]["host"])
                 port = action_message["data"]["port"]
                 time = action_message["data"]["time"]
                 print "Blocking host %s on port %s for duration %s" % \
